@@ -1,0 +1,32 @@
+{
+  "name": "plalib",
+  "version": "0.0.1",
+  "description": "Library with implementations of linear algebra parallel algorithms using JS and Web technologies",
+  "main": "src/plalib.js",
+  "scripts": {
+    "test": "karma start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmytroyarmak/plalib.git"
+  },
+  "keywords": [
+    "linear",
+    "algebra",
+    "parallel",
+    "linear",
+    "system"
+  ],
+  "author": "Dmytro Yarmak <dmytroyarmak@gmail.com> (http://dmytroyarmak.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dmytroyarmak/plalib/issues"
+  },
+  "homepage": "https://github.com/dmytroyarmak/plalib#readme",
+  "devDependencies": {
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.13.11",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-jasmine": "^0.3.6"
+  }
+}
