@@ -6,9 +6,7 @@
   function gaussianElimination (m, n, a, b) {
     var kMax, k, i, j, coef;
 
-    kMax =  Math.min(m, n);
-
-    for (k = 0; k < kMax; k += 1) {
+    for (k = 0, kMax =  Math.min(m, n); k < kMax; k += 1) {
       for (i = k + 1; i < m; i += 1) {
         coef = a[i * n + k] / a[k * n + k];
 
@@ -23,7 +21,25 @@
     }
   }
 
+  function gaussJordanElimination (m, n, a, b) {
+    gaussianElimination(m, n, a, b);
+
+    var k, i, coef;
+
+    for (k = Math.min(m, n) -1; k >= 0; k -= 1) {
+      for (i = 0; i < k; i += 1) {
+        coef = a[i * n + k] / a[k * n + k];
+        a[i * n + k] = 0;
+        b[i] = b[i] - b[k] * coef;
+      }
+
+      b[k] = b[k] / a[k * n + k];
+      a[k * n + k] = 1;
+    }
+  }
+
   root.plalib = {
-    gaussianElimination: gaussianElimination
+    gaussianElimination: gaussianElimination,
+    gaussJordanElimination: gaussJordanElimination
   };
 }(this));
