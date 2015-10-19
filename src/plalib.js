@@ -3,11 +3,18 @@
 (function(root) {
   'use strict';
 
-  function gaussianElimination (m, n, a, b) {
+  var WORKERS_AMOUNT = 3;
+
+  // For non-parallel version only m, n, a, b are required parameters
+  function gaussianElimination (m, n, a, b, iMin, iMax, barrier) {
     var kMax, k, i, j, coef;
 
+    // Used for parallel implementation to calcualte only subset of rows
+    iMin = iMin || 0;
+    iMax = iMax || m;
+
     for (k = 0, kMax =  Math.min(m, n); k < kMax; k += 1) {
-      for (i = k + 1; i < m; i += 1) {
+      for (i = Math.max(iMin, k + 1); i < iMax; i += 1) {
         coef = a[i * n + k] / a[k * n + k];
 
         a[i * n + k] = 0;
@@ -18,6 +25,9 @@
 
         b[i] = b[i] - b[k] * coef;
       }
+
+      // Used for parallel implementation to sync web workers
+      _enterBarrier(barrier);
     }
   }
 
@@ -38,8 +48,70 @@
     }
   }
 
+  function gaussianEliminationPar (m, n, a, b) {
+    var barrier = _initBarrier(WORKERS_AMOUNT);
+
+    return Promise.all(createWorkers(WORKERS_AMOUNT).map(function(worker, i) {
+        return new Promise(function(resolve, reject) {
+          worker.postMessage({
+            m: m,
+            n: n,
+            a: a,
+            b: b,
+            numberOfWorker: i,
+            amountOfWorkers: WORKERS_AMOUNT,
+            barrier: barrier
+          }, [barrier.buffer, a.buffer, b.buffer]);
+
+          worker.onmessage = resolve;
+          worker.onerror = reject;
+        });
+    }));
+  }
+
+  function createWorkers (n) {
+    var i;
+    var workers = [];
+    for (i = 0; i < n; i += 1) {
+      workers.push(new Worker('src/plalib-worker.js'));
+    }
+    return workers;
+  }
+
+  var BARRIER_COUNTE_INDEX = 0;
+  var BARRIER_SEQ_INDEX = 1;
+  var BARRIER_NUM_AGENTS_INDEX = 2;
+
+  function _initBarrier (numAgents) {
+    var barrier = new SharedInt32Array(3);
+    Atomics.store(barrier, BARRIER_COUNTE_INDEX, numAgents);
+    Atomics.store(barrier, BARRIER_SEQ_INDEX, 0);
+    Atomics.store(barrier, BARRIER_NUM_AGENTS_INDEX, numAgents);
+    return barrier;
+  }
+
+  // Used for parallel implementation to sync web workers
+  function _enterBarrier (barrier) {
+    if (!barrier) { return; }
+
+    var numAgents;
+    var seq = Atomics.load(barrier, BARRIER_SEQ_INDEX);
+
+    if (Atomics.sub(barrier, BARRIER_COUNTE_INDEX, 1) === 1) {
+        numAgents = barrier[BARRIER_NUM_AGENTS_INDEX];
+        barrier[BARRIER_COUNTE_INDEX] = numAgents;
+        Atomics.add(barrier, BARRIER_SEQ_INDEX, 1);
+        Atomics.futexWake(barrier, BARRIER_SEQ_INDEX, numAgents - 1);
+        Atomics.add(barrier, BARRIER_SEQ_INDEX, 1);
+    } else {
+        Atomics.futexWait(barrier, BARRIER_SEQ_INDEX, seq, Number.POSITIVE_INFINITY);
+        while (Atomics.load(barrier, BARRIER_SEQ_INDEX) & 1);
+    }
+  }
+
   root.plalib = {
     gaussianElimination: gaussianElimination,
-    gaussJordanElimination: gaussJordanElimination
+    gaussJordanElimination: gaussJordanElimination,
+    gaussianEliminationPar: gaussianEliminationPar
   };
 }(this));

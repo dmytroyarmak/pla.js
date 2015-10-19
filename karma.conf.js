@@ -15,6 +15,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       {pattern: 'src/plalib.js', watched: true, included: true, served: true},
+      {pattern: 'src/plalib-worker.js', watched: true, included: false, served: true},
       'test/unit/*-spec.js'
     ],
 
