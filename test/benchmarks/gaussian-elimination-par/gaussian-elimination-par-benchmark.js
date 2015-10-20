@@ -1,13 +1,22 @@
 (function() {
   'use strict';
 
+  function getSize () {
+    var sizeMatching = document.location.search.match(/size=(\d+)/);
+    if (sizeMatching) {
+      return parseInt(sizeMatching[1], 10);
+    } else {
+      return 500;
+    }
+  }
+
   var timing = [];
   var k;
   var current = Promise.resolve();
-  for (k = 0; k < 52; k += 1) {
-    current = function(previous) {
+  for (k = 0; k < 11; k += 1) {
+    current = function(previous, k) {
       return previous.then(function() {
-        var size = 500;
+        var size = k ? getSize() : 1000;
         var a = new SharedFloat64Array(size * size);
         for (var i = 0; i < size * size; i += 1) {
           a[i] = Math.floor(Math.random() * 10);
@@ -24,14 +33,14 @@
           return endTime - startTime;
         });
       });
-    }(current);
+    }(current, k);
 
     timing.push(current);
   }
 
   Promise.all(timing).then(function(result) {
-    alert('mean ' + result.slice(2).reduce(function(mem, cur) {
+    alert('mean ' + result.slice(1).reduce(function(mem, cur) {
       return mem + cur;
-    }, 0)/ result.length);
+    }, 0) / 10);
   });
 }());
