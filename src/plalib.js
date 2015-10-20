@@ -3,7 +3,8 @@
 (function(root) {
   'use strict';
 
-  var WORKERS_AMOUNT = 3;
+  var WORKERS_AMOUNT = 4;
+  var workers;
 
   // For non-parallel version only m, n, a, b are required parameters
   function gaussianElimination (m, n, a, b, iMin, iMax, barrier) {
@@ -71,10 +72,14 @@
 
   function createWorkers (n) {
     var i;
-    var workers = [];
-    for (i = 0; i < n; i += 1) {
-      workers.push(new Worker('src/plalib-worker.js'));
+
+    if (!workers) {
+      workers = [];
+      for (i = 0; i < n; i += 1) {
+        workers.push(new Worker('/src/plalib-worker.js'));
+      }
     }
+
     return workers;
   }
 

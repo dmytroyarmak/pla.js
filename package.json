@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/dmytroyarmak/plalib#readme",
   "devDependencies": {
+    "benchmark": "^1.0.0",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.11",
     "karma-firefox-launcher": "^0.1.6",

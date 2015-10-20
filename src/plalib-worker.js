@@ -8,9 +8,10 @@ onmessage = function(e) {
   var barrier = e.data.barrier;
   var numberOfWorker = e.data.numberOfWorker;
   var amountOfWorkers = e.data.amountOfWorkers;
-  var rowsPerWorker = (m / amountOfWorkers);
+  var isLastWorker = (numberOfWorker === (amountOfWorkers - 1));
+  var rowsPerWorker = Math.floor(m / amountOfWorkers);
   var iMin =  rowsPerWorker * numberOfWorker;
-  var iMax = iMin + rowsPerWorker;
+  var iMax =  isLastWorker ? m : iMin + rowsPerWorker;
 
   plalib.gaussianElimination(m, n, a, b, iMin, iMax, barrier);
 
