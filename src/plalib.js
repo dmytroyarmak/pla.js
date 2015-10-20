@@ -7,24 +7,23 @@
   var workers;
 
   // For non-parallel version only m, n, a, b are required parameters
-  function gaussianElimination (m, n, a, b, iMin, iMax, barrier) {
+  function gaussianElimination (m, n, a, b, numberOfWorker, barrier) {
     var kMax, k, i, j, coef;
 
-    // Used for parallel implementation to calcualte only subset of rows
-    iMin = iMin || 0;
-    iMax = iMax || m;
-
     for (k = 0, kMax =  Math.min(m, n); k < kMax; k += 1) {
-      for (i = Math.max(iMin, k + 1); i < iMax; i += 1) {
-        coef = a[i * n + k] / a[k * n + k];
+      for (i = k + 1; i < m; i += 1) {
+        // Worker with number N should calculate each N-th row (ignored for not parallel case)
+        if (!barrier || i % WORKERS_AMOUNT === numberOfWorker) {
+          coef = a[i * n + k] / a[k * n + k];
 
-        a[i * n + k] = 0;
+          a[i * n + k] = 0;
 
-        for (j = k + 1; j < n; j += 1) {
-          a[i * n + j] = a[i * n + j] - a[k * n + j] * coef;
+          for (j = k + 1; j < n; j += 1) {
+            a[i * n + j] = a[i * n + j] - a[k * n + j] * coef;
+          }
+
+          b[i] = b[i] - b[k] * coef;
         }
-
-        b[i] = b[i] - b[k] * coef;
       }
 
       // Used for parallel implementation to sync web workers
@@ -60,7 +59,6 @@
             a: a,
             b: b,
             numberOfWorker: i,
-            amountOfWorkers: WORKERS_AMOUNT,
             barrier: barrier
           }, [barrier.buffer, a.buffer, b.buffer]);
 

@@ -7,13 +7,8 @@ onmessage = function(e) {
   var b = e.data.b;
   var barrier = e.data.barrier;
   var numberOfWorker = e.data.numberOfWorker;
-  var amountOfWorkers = e.data.amountOfWorkers;
-  var isLastWorker = (numberOfWorker === (amountOfWorkers - 1));
-  var rowsPerWorker = Math.floor(m / amountOfWorkers);
-  var iMin =  rowsPerWorker * numberOfWorker;
-  var iMax =  isLastWorker ? m : iMin + rowsPerWorker;
 
-  plalib.gaussianElimination(m, n, a, b, iMin, iMax, barrier);
+  plalib.gaussianElimination(m, n, a, b, numberOfWorker, barrier);
 
   postMessage('DONE');
 };
