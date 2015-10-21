@@ -1,16 +1,11 @@
 importScripts('./plalib.js');
 
 onmessage = function(e) {
-  var m = e.data.m;
-  var n = e.data.n;
-  var a = e.data.a;
-  var b = e.data.b;
-  var barrier = e.data.barrier;
-  var numberOfWorker = e.data.numberOfWorker;
-
-  plalib.gaussianElimination(m, n, a, b, numberOfWorker, barrier);
-
-  postMessage('DONE');
+  var methodName = e.data[0];
+  var taskId = e.data[1];
+  var args = e.data.slice(2);
+  plalib[methodName].apply(plalib, args);
+  postMessage(taskId);
 };
 
 

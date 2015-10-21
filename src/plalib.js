@@ -31,20 +31,31 @@
     }
   }
 
-  function gaussJordanElimination (m, n, a, b) {
-    gaussianElimination(m, n, a, b);
+  // For non-parallel version only m, n, a, b are required parameters
+  function gaussJordanElimination (m, n, a, b, numberOfWorker, barrier) {
+    gaussianElimination(m, n, a, b, numberOfWorker, barrier);
 
     var k, i, coef;
 
     for (k = Math.min(m, n) -1; k >= 0; k -= 1) {
       for (i = 0; i < k; i += 1) {
-        coef = a[i * n + k] / a[k * n + k];
-        a[i * n + k] = 0;
-        b[i] = b[i] - b[k] * coef;
+        // Worker with number N should calculate each N-th row (ignored for not parallel case)
+        if (!barrier || i % WORKERS_AMOUNT === numberOfWorker) {
+          coef = a[i * n + k] / a[k * n + k];
+          a[i * n + k] = 0;
+          b[i] = b[i] - b[k] * coef;
+        }
       }
 
-      b[k] = b[k] / a[k * n + k];
-      a[k * n + k] = 1;
+      // Used for parallel implementation to sync web workers
+      _enterBarrier(barrier);
+
+      if (!numberOfWorker) {
+        b[k] = b[k] / a[k * n + k];
+        a[k * n + k] = 1;
+      }
+
+      _enterBarrier(barrier);
     }
   }
 
@@ -53,16 +64,37 @@
 
     return Promise.all(createWorkers(WORKERS_AMOUNT).map(function(worker, i) {
         return new Promise(function(resolve, reject) {
-          worker.postMessage({
-            m: m,
-            n: n,
-            a: a,
-            b: b,
-            numberOfWorker: i,
-            barrier: barrier
-          }, [barrier.buffer, a.buffer, b.buffer]);
+          var taskId = Date.now();
+          worker.postMessage(
+            ['gaussianElimination', taskId, m, n, a, b, i, barrier],
+            [barrier.buffer, a.buffer, b.buffer]
+          );
+          worker.onmessage = function(e) {
+            if (e.data === taskId) {
+              resolve();
+            }
+          };
+          worker.onerror = reject;
+        });
+    }));
+  }
 
-          worker.onmessage = resolve;
+  function gaussJordanEliminationPar (m, n, a, b) {
+    var barrier = _initBarrier(WORKERS_AMOUNT);
+
+    return Promise.all(createWorkers(WORKERS_AMOUNT).map(function(worker, i) {
+        return new Promise(function(resolve, reject) {
+          var taskId = Date.now();
+          worker.postMessage(
+            ['gaussJordanElimination', taskId, m, n, a, b, i, barrier],
+            [barrier.buffer, a.buffer, b.buffer]
+          );
+
+          worker.onmessage = function(e) {
+            if (e.data === taskId) {
+              resolve();
+            }
+          };
           worker.onerror = reject;
         });
     }));
@@ -115,6 +147,7 @@
   root.plalib = {
     gaussianElimination: gaussianElimination,
     gaussJordanElimination: gaussJordanElimination,
-    gaussianEliminationPar: gaussianEliminationPar
+    gaussianEliminationPar: gaussianEliminationPar,
+    gaussJordanEliminationPar: gaussJordanEliminationPar
   };
 }(this));
