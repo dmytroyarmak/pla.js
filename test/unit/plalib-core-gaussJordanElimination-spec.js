@@ -1,4 +1,4 @@
-describe('plalib.core.gaussJordanElimination', function() {
+xdescribe('plalib.core.gaussJordanElimination', function() {
   it('should be a function', function() {
     expect(plalib.core.gaussJordanElimination).toEqual(jasmine.any(Function));
   });

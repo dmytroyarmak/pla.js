@@ -1,4 +1,4 @@
-describe('plalib.core.gaussianEliminationWithMainElementByRow', function() {
+xdescribe('plalib.core.gaussianEliminationWithMainElementByRow', function() {
   it('should be a function', function() {
     expect(plalib.core.gaussianEliminationWithMainElementByRow).toEqual(jasmine.any(Function));
   });

@@ -1,12 +1,7 @@
-importScripts('./plalib-barrier.js', './plalib-core.js');
+import * as core from './plalib-core';
 
 onmessage = function(e) {
-  var methodName = e.data[0];
-  var taskId = e.data[1];
-  var args = e.data.slice(2);
-  plalib.core[methodName].apply(plalib, args);
+  var [methodName, taskId, ...args] = e.data;
+  core[methodName](...args);
   postMessage(taskId);
 };
-
-
-

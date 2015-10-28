@@ -14,15 +14,13 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      {pattern: 'src/plalib.js', watched: true, included: true, served: true},
-      {pattern: 'src/plalib-barrier.js', watched: true, included: true, served: true},
-      {pattern: 'src/plalib-core.js', watched: true, included: true, served: true},
-      {pattern: 'src/plalib-worker.js', watched: true, included: false, served: true},
+      {pattern: 'dist/plalib.js', watched: true, included: true, served: true},
+      {pattern: 'dist/plalib-worker.js', watched: true, included: false, served: true},
       'test/unit/*-spec.js'
     ],
 
     proxies: {
-      '/src': '/base/src'
+      '/dist': '/base/dist'
     },
 
 
