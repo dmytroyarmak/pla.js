@@ -48,7 +48,6 @@ describe('plalib.gaussJordanEliminationPar', function() {
       });
 
       it('should transform a to triangular form', function() {
-        var EPSILON =  0.00000000000001;
         var i;
 
         var expectedA = [
@@ -64,8 +63,8 @@ describe('plalib.gaussJordanEliminationPar', function() {
         ];
 
 
-        for (i = 0; i < a.length; i += 1) {
-          expect(Math.abs(a[i] - expectedA[i]) < EPSILON).toBe(true);
+        for (i = 0; i < expectedA.length; i += 1) {
+          expect(a[i]).toBeCloseTo(expectedA[i], 15);
         }
 
         var expectedB = [
@@ -80,8 +79,8 @@ describe('plalib.gaussJordanEliminationPar', function() {
           2.0000280981750276
         ];
 
-        for (i = 0; i < 9; i += 1) {
-          expect(Math.abs(b[i] - expectedB[i]) < EPSILON).toBe(true);
+        for (i = 0; i < expectedB.length; i += 1) {
+          expect(b[i]).toBeCloseTo(expectedB[i], 15);
         }
       });
     });
