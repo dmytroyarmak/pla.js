@@ -4,6 +4,13 @@ export class Plalib {
   constructor({workersAmount = 4, workerUrl = '/src/plalib-worker.js'} = {}) {
     this.workersAmount = workersAmount;
     this.workerUrl = workerUrl;
+    this._createWorkers();
+  }
+
+  terminate() {
+    this._workers.forEach(function(worker) {
+      worker.terminate();
+    });
   }
 
   gaussianEliminationPar(m, n, a, b) {
@@ -17,7 +24,7 @@ export class Plalib {
   _invokeOnWebWorkers(methodName, m, n, a, b) {
     var barrier = initBarrier(this.workersAmount);
 
-    return Promise.all(this._createWorkers().map((worker, i) => {
+    return Promise.all(this._workers.map((worker, i) => {
         return new Promise((resolve, reject) => {
           var taskId = Date.now();
           worker.postMessage(
@@ -36,15 +43,9 @@ export class Plalib {
   }
 
   _createWorkers () {
-    var i;
-
-    if (!this.workers) {
-      this.workers = [];
-      for (i = 0; i < this.workersAmount; i += 1) {
-        this.workers.push(new Worker(this.workerUrl));
-      }
+    this._workers = [];
+    for (let i = 0; i < this.workersAmount; i += 1) {
+      this._workers.push(new Worker(this.workerUrl));
     }
-
-    return this.workers;
   }
 }

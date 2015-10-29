@@ -1,7 +1,12 @@
 import {Plalib} from '../../src/plalib';
-var plalib = new Plalib();;
 
 describe('plalib.gaussianEliminationPar', function() {
+  var plalib;
+
+  beforeEach(function() {
+    plalib = new Plalib();
+  });
+
   it('should be a function', function() {
     expect(plalib.gaussianEliminationPar).toEqual(jasmine.any(Function));
   });
