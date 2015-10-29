@@ -1,6 +1,8 @@
-xdescribe('plalib.core.gaussianEliminationWithMainElementByRow', function() {
+import {gaussianEliminationWithMainElementByRow} from '../../src/plalib-core';
+
+describe('gaussianEliminationWithMainElementByRow', function() {
   it('should be a function', function() {
-    expect(plalib.core.gaussianEliminationWithMainElementByRow).toEqual(jasmine.any(Function));
+    expect(gaussianEliminationWithMainElementByRow).toEqual(jasmine.any(Function));
   });
 
   describe('for ax=b where a is a matrix mxn', function() {
@@ -21,7 +23,7 @@ xdescribe('plalib.core.gaussianEliminationWithMainElementByRow', function() {
          -3
       ];
 
-      plalib.core.gaussianEliminationWithMainElementByRow(m, n, a, b);
+      gaussianEliminationWithMainElementByRow(m, n, a, b);
     });
 
     it('should transform a to triangular form', function() {

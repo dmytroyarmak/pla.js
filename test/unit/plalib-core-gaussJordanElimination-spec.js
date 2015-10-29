@@ -1,6 +1,8 @@
-xdescribe('plalib.core.gaussJordanElimination', function() {
+import {gaussJordanElimination} from '../../src/plalib-core';
+
+describe('gaussJordanElimination', function() {
   it('should be a function', function() {
-    expect(plalib.core.gaussJordanElimination).toEqual(jasmine.any(Function));
+    expect(gaussJordanElimination).toEqual(jasmine.any(Function));
   });
 
   describe('for ax=b where a is a matrix mxn', function() {
@@ -21,7 +23,7 @@ xdescribe('plalib.core.gaussJordanElimination', function() {
          -3
       ];
 
-      plalib.core.gaussJordanElimination(m, n, a, b);
+      gaussJordanElimination(m, n, a, b);
     });
 
     it('should transform a to triangular form', function() {

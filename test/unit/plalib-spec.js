@@ -1,5 +1,7 @@
-describe('plalib', function() {
+import {Plalib} from '../../src/plalib';
+
+describe('Plalib', function() {
   it('should be defined', function() {
-    expect(typeof plalib).toBe('object');
+    expect(typeof Plalib).toBe('function');
   });
 });

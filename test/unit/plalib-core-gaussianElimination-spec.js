@@ -1,6 +1,8 @@
-xdescribe('plalib.core.gaussianElimination', function() {
+import {gaussianElimination} from '../../src/plalib-core';
+
+describe('gaussianElimination', function() {
   it('should be a function', function() {
-    expect(plalib.core.gaussianElimination).toEqual(jasmine.any(Function));
+    expect(gaussianElimination).toEqual(jasmine.any(Function));
   });
 
   describe('for ax=b where a is a matrix mxn', function() {
@@ -21,7 +23,7 @@ xdescribe('plalib.core.gaussianElimination', function() {
          -3
       ];
 
-      plalib.core.gaussianElimination(m, n, a, b);
+      gaussianElimination(m, n, a, b);
     });
 
     it('should transform a to triangular form', function() {

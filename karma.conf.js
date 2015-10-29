@@ -14,7 +14,6 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      {pattern: 'dist/plalib.js', watched: true, included: true, served: true},
       {pattern: 'dist/plalib-worker.js', watched: true, included: false, served: true},
       'test/unit/*-spec.js'
     ],
@@ -32,8 +31,33 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      'test/unit/*-spec.js': ['webpack']
     },
 
+    webpack: {
+      // karma watches the test entry points
+      // (you don't need to specify the entry option)
+      // webpack watches dependencies
+
+      // webpack configuration
+      module: {
+          loaders: [
+          { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader"}
+        ]
+      }
+    },
+
+    webpackMiddleware: {
+      // webpack-dev-middleware configuration
+      // i. e.
+      noInfo: true
+    },
+
+    plugins: [
+      'karma-firefox-launcher',
+      'karma-jasmine',
+      'karma-webpack'
+    ],
 
     // test results reporter to use
     // possible values: 'dots', 'progress'

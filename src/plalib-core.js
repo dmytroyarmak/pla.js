@@ -2,17 +2,15 @@ import {enterBarrier} from './plalib-barrier-worker';
 
 // For non-parallel version only m, n, a, b are required parameters
 export function gaussianElimination (m, n, a, b, numberOfWorker, workersAmount, barrier) {
-  var kMax, k, i, j, coef;
-
-  for (k = 0, kMax =  Math.min(m, n); k < kMax; k += 1) {
-    for (i = k + 1; i < m; i += 1) {
+  for (let k = 0, kMax =  Math.min(m, n); k < kMax; k += 1) {
+    for (let i = k + 1; i < m; i += 1) {
       // Worker with number N should calculate each N-th row (ignored for not parallel case)
       if (!barrier || i % workersAmount === numberOfWorker) {
-        coef = a[i * n + k] / a[k * n + k];
+        let coef = a[i * n + k] / a[k * n + k];
 
         a[i * n + k] = 0;
 
-        for (j = k + 1; j < n; j += 1) {
+        for (let j = k + 1; j < n; j += 1) {
           a[i * n + j] = a[i * n + j] - a[k * n + j] * coef;
         }
 
@@ -29,13 +27,11 @@ export function gaussianElimination (m, n, a, b, numberOfWorker, workersAmount, 
 export function gaussJordanElimination (m, n, a, b, numberOfWorker, workersAmount, barrier) {
   gaussianElimination(m, n, a, b, numberOfWorker, barrier);
 
-  var k, i, coef;
-
-  for (k = Math.min(m, n) -1; k >= 0; k -= 1) {
-    for (i = 0; i < k; i += 1) {
+  for (let k = Math.min(m, n) - 1; k >= 0; k -= 1) {
+    for (let i = 0; i < k; i += 1) {
       // Worker with number N should calculate each N-th row (ignored for not parallel case)
       if (!barrier || i % workersAmount === numberOfWorker) {
-        coef = a[i * n + k] / a[k * n + k];
+        let coef = a[i * n + k] / a[k * n + k];
         a[i * n + k] = 0;
         b[i] = b[i] - b[k] * coef;
       }
