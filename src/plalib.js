@@ -1,7 +1,7 @@
 import {initBarrier} from './plalib-barrier-master';
 
 export class Plalib {
-  constructor({workersAmount = 4, workerUrl = '/dist/plalib-worker.js'} = {}) {
+  constructor({workersAmount = 4, workerUrl = '/src/plalib-worker.js'} = {}) {
     this.workersAmount = workersAmount;
     this.workerUrl = workerUrl;
   }
