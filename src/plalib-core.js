@@ -103,3 +103,6 @@ export function gaussianEliminationWithMainElementByRow (m, n, a, b, numberOfWor
     enterBarrier(barrier);
   }
 }
+
+export function choleskyDecomposition () {
+}
