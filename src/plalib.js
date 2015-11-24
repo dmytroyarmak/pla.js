@@ -13,22 +13,22 @@ export class Plalib {
     });
   }
 
-  gaussianEliminationPar(m, n, a, b) {
-    return this._invokeOnWebWorkers('gaussianElimination', m, n, a, b);
+  gaussianEliminationPar(n, a, b) {
+    return this._invokeOnWebWorkers('gaussianElimination', n, a, b);
   }
 
-  gaussJordanEliminationPar(m, n, a, b) {
-    return this._invokeOnWebWorkers('gaussJordanElimination', m, n, a, b);
+  gaussJordanEliminationPar(n, a, b) {
+    return this._invokeOnWebWorkers('gaussJordanElimination', n, a, b);
   }
 
-  _invokeOnWebWorkers(methodName, m, n, a, b) {
+  _invokeOnWebWorkers(methodName, n, a, b) {
     var barrier = initBarrier(this.workersAmount);
 
     return Promise.all(this._workers.map((worker, i) => {
         return new Promise((resolve, reject) => {
           var taskId = Date.now();
           worker.postMessage(
-            [methodName, taskId, m, n, a, b, i, this.workersAmount, barrier],
+            [methodName, taskId, n, a, b, i, this.workersAmount, barrier],
             [barrier.buffer, a.buffer, b.buffer]
           );
 

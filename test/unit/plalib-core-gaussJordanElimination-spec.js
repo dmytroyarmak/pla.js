@@ -5,11 +5,10 @@ describe('gaussJordanElimination', function() {
     expect(gaussJordanElimination).toEqual(jasmine.any(Function));
   });
 
-  describe('for ax=b where a is a matrix mxn', function() {
-    var m, n, a, b;
+  describe('for ax=b where a is a matrix nxn', function() {
+    var n, a, b;
 
     beforeEach(function() {
-      m = 3;
       n = 3;
       a = [
           2,  1, -1,
@@ -23,7 +22,7 @@ describe('gaussJordanElimination', function() {
          -3
       ];
 
-      gaussJordanElimination(m, n, a, b);
+      gaussJordanElimination(n, a, b);
     });
 
     it('should transform a to triangular form', function() {

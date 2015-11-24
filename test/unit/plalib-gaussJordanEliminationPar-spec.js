@@ -15,13 +15,12 @@ describe('Plalib.gaussJordanEliminationPar', function() {
     expect(plalib.gaussJordanEliminationPar).toEqual(jasmine.any(Function));
   });
 
-  describe('for ax=b where a is a matrix mxn', function() {
-    var m, n, a, b, result;
+  describe('for ax=b where a is a matrix nxn', function() {
+    var n, a, b, result;
 
     beforeEach(function() {
-      m = 9;
       n = 9;
-      a = new SharedFloat64Array(m * n);
+      a = new SharedFloat64Array(n * n);
       a.set([
         8, 7, 6, 8, 9, 9, 6, 2, 3,
         7, 9, 7, 2, 1, 5, 1, 1, 2,
@@ -34,7 +33,7 @@ describe('Plalib.gaussJordanEliminationPar', function() {
         2, 7, 8, 2, 8, 1, 8, 7, 5
       ]);
 
-      b = new SharedFloat64Array(m);
+      b = new SharedFloat64Array(n);
       b.set([
         9,
         9,
@@ -47,7 +46,7 @@ describe('Plalib.gaussJordanEliminationPar', function() {
         1
       ]);
 
-      result = plalib.gaussJordanEliminationPar(m, n, a, b);
+      result = plalib.gaussJordanEliminationPar(n, a, b);
     });
 
     it('should return a promise', function() {

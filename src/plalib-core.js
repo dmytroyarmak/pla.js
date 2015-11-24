@@ -1,9 +1,9 @@
 import {enterBarrier} from './plalib-barrier-worker';
 
-// For non-parallel version only m, n, a, b are required parameters
-export function gaussianElimination (m, n, a, b, numberOfWorker, workersAmount, barrier) {
-  for (let k = 0, kMax =  Math.min(m, n); k < kMax; k += 1) {
-    for (let i = k + 1; i < m; i += 1) {
+// For non-parallel version only n, a, b are required parameters
+export function gaussianElimination (n, a, b, numberOfWorker, workersAmount, barrier) {
+  for (let k = 0; k < n; k += 1) {
+    for (let i = k + 1; i < n; i += 1) {
       // Worker with number N should calculate each N-th row (ignored for not parallel case)
       if (!barrier || i % workersAmount === numberOfWorker) {
         let coef = a[i * n + k] / a[k * n + k];
@@ -23,11 +23,11 @@ export function gaussianElimination (m, n, a, b, numberOfWorker, workersAmount, 
   }
 }
 
-// For non-parallel version only m, n, a, b are required parameters
-export function gaussJordanElimination (m, n, a, b, numberOfWorker, workersAmount, barrier) {
-  gaussianElimination(m, n, a, b, numberOfWorker, barrier);
+// For non-parallel version only n, a, b are required parameters
+export function gaussJordanElimination (n, a, b, numberOfWorker, workersAmount, barrier) {
+  gaussianElimination(n, a, b, numberOfWorker, barrier);
 
-  for (let k = Math.min(m, n) - 1; k >= 0; k -= 1) {
+  for (let k = n - 1; k >= 0; k -= 1) {
     for (let i = 0; i < k; i += 1) {
       // Worker with number N should calculate each N-th row (ignored for not parallel case)
       if (!barrier || i % workersAmount === numberOfWorker) {
@@ -49,18 +49,18 @@ export function gaussJordanElimination (m, n, a, b, numberOfWorker, workersAmoun
   }
 }
 
-// For non-parallel version only m, n, a, b are required parameters
-export function gaussianEliminationWithMainElementByRow (m, n, a, b, numberOfWorker, workersAmount, barrier) {
-  var kMax, k, i, j, coef, mainRow, mainElement, currentElement, temp;
+// For non-parallel version only n, a, b are required parameters
+export function gaussianEliminationWithMainElementByRow (n, a, b, numberOfWorker, workersAmount, barrier) {
+  var k, i, j, coef, mainRow, mainElement, currentElement, temp;
 
-  for (k = 0, kMax =  Math.min(m, n); k < kMax; k += 1) {
+  for (k = 0; k < n; k += 1) {
 
     // Find main row
     if (!numberOfWorker) {
       mainRow = k;
       mainElement = Math.abs(a[k * n + k]);
 
-      for (i = k + 1; i < m; i += 1) {
+      for (i = k + 1; i < n; i += 1) {
         currentElement = Math.abs(a[i * n + k]);
         if (currentElement > mainElement) {
           mainElement = currentElement;
@@ -84,7 +84,7 @@ export function gaussianEliminationWithMainElementByRow (m, n, a, b, numberOfWor
 
     enterBarrier(barrier);
 
-    for (i = k + 1; i < m; i += 1) {
+    for (i = k + 1; i < n; i += 1) {
       // Worker with number N should calculate each N-th row (ignored for not parallel case)
       if (!barrier || i % workersAmount === numberOfWorker) {
         coef = a[i * n + k] / a[k * n + k];
