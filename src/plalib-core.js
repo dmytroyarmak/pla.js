@@ -51,17 +51,15 @@ export function gaussJordanElimination (n, a, b, numberOfWorker, workersAmount, 
 
 // For non-parallel version only n, a, b are required parameters
 export function gaussianEliminationWithMainElementByRow (n, a, b, numberOfWorker, workersAmount, barrier) {
-  var k, i, j, coef, mainRow, mainElement, currentElement, temp;
-
-  for (k = 0; k < n; k += 1) {
+  for (let k = 0; k < n; k += 1) {
 
     // Find main row
     if (!numberOfWorker) {
-      mainRow = k;
-      mainElement = Math.abs(a[k * n + k]);
+      let mainRow = k;
+      let mainElement = Math.abs(a[k * n + k]);
 
-      for (i = k + 1; i < n; i += 1) {
-        currentElement = Math.abs(a[i * n + k]);
+      for (let i = k + 1; i < n; i += 1) {
+        let currentElement = Math.abs(a[i * n + k]);
         if (currentElement > mainElement) {
           mainElement = currentElement;
           mainRow = i;
@@ -70,28 +68,28 @@ export function gaussianEliminationWithMainElementByRow (n, a, b, numberOfWorker
 
       if (mainRow !== k) {
         // Swap rows
-        for (j = k; j < n; j += 1) {
-          temp = a[k * n + j];
+        for (let j = k; j < n; j += 1) {
+          let tempA = a[k * n + j];
           a[k * n + j] = a[mainRow * n + j];
-          a[mainRow * n + j] = temp;
+          a[mainRow * n + j] = tempA;
         }
 
-        temp = b[k];
+        let tempB = b[k];
         b[k] = b[mainRow];
-        b[mainRow] = temp;
+        b[mainRow] = tempB;
       }
     }
 
     enterBarrier(barrier);
 
-    for (i = k + 1; i < n; i += 1) {
+    for (let i = k + 1; i < n; i += 1) {
       // Worker with number N should calculate each N-th row (ignored for not parallel case)
       if (!barrier || i % workersAmount === numberOfWorker) {
-        coef = a[i * n + k] / a[k * n + k];
+        let coef = a[i * n + k] / a[k * n + k];
 
         a[i * n + k] = 0;
 
-        for (j = k + 1; j < n; j += 1) {
+        for (let j = k + 1; j < n; j += 1) {
           a[i * n + j] = a[i * n + j] - a[k * n + j] * coef;
         }
 
