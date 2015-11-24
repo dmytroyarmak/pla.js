@@ -102,5 +102,23 @@ export function gaussianEliminationWithMainElementByRow (n, a, b, numberOfWorker
   }
 }
 
-export function choleskyDecomposition () {
+export function choleskyDecomposition (n, a, b) {
+  for (let i = 0; i < n; i += 1) {
+    for (let k = 0; k < i; k += 1) {
+      a[i * n + i] = a[i * n + i] - Math.pow(a[i * n + k], 2);
+    }
+
+    a[i * n + i] = Math.sqrt(a[i * n + i]);
+
+    for (let j = 0; j < i; j += 1) {
+      a[j * n + i] = 0;
+    }
+
+    for (let j = i + 1; j < n; j += 1) {
+      for (let k = 0; k < i; k += 1) {
+        a[j * n + i] = a[j * n + i] - a[i * n + k] * a[j * n + k];
+      }
+      a[j * n + i] = a[j * n + i] / a[i * n + i];
+    }
+  }
 }
