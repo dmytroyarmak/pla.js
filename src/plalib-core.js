@@ -102,7 +102,8 @@ export function gaussianEliminationWithMainElementByRow (n, a, b, numberOfWorker
   }
 }
 
-export function choleskyDecomposition (n, a, b) {
+// Cholesky–Crout algorithm
+export function choleskyDecomposition (n, a) {
   for (let i = 0; i < n; i += 1) {
     for (let k = 0; k < i; k += 1) {
       a[i * n + i] = a[i * n + i] - Math.pow(a[i * n + k], 2);

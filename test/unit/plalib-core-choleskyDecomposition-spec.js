@@ -16,13 +16,7 @@ describe('choleskyDecomposition', function() {
         3, 1, 7
       ];
 
-      b = [
-        10,
-        20,
-        30
-      ];
-
-      choleskyDecomposition(n, a, b);
+      choleskyDecomposition(n, a);
     });
 
     it('should transform a to triangular form', function() {
