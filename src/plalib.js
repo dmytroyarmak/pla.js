@@ -21,6 +21,22 @@ export class Plalib {
     return this._invokeOnWebWorkers('gaussJordanElimination', n, a, b);
   }
 
+  solveUpperTriangularMatrixEquation(n, u, b) {
+    var x = new SharedFloat64Array(n);
+
+    for (let k = n - 1; k >= 0; k -= 1) {
+      x[k] = b[k];
+
+      for (let i = k + 1; i < n; i += 1) {
+        x[k] -= x[i] * u[k * n + i];
+      }
+
+      x[k] = x[k]/u[k * n + k];
+    }
+
+    return Promise.resolve(x);
+  }
+
   _invokeOnWebWorkers(methodName, n, a, b) {
     var barrier = initBarrier(this.workersAmount);
 
