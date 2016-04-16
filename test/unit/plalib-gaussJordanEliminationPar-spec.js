@@ -20,7 +20,7 @@ describe('Plalib.gaussJordanEliminationPar', function() {
 
     beforeEach(function() {
       n = 9;
-      a = new SharedFloat64Array(n * n);
+      a = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n * n));
       a.set([
         8, 7, 6, 8, 9, 9, 6, 2, 3,
         7, 9, 7, 2, 1, 5, 1, 1, 2,
@@ -33,7 +33,7 @@ describe('Plalib.gaussJordanEliminationPar', function() {
         2, 7, 8, 2, 8, 1, 8, 7, 5
       ]);
 
-      b = new SharedFloat64Array(n);
+      b = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n));
       b.set([
         9,
         9,

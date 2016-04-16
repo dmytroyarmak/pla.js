@@ -17,12 +17,12 @@
     current = function(previous, k) {
       return previous.then(function() {
         var size = k ? getSize() : 1000;
-        var a = new SharedFloat64Array(size * size);
+        var a = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * size * size));
         for (var i = 0; i < size * size; i += 1) {
           a[i] = Math.floor(Math.random() * 10);
         }
 
-        var b = new SharedFloat64Array(size);
+        var b = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * size));
         for (var j = 0; j < size; j += 1) {
           b[j] = Math.floor(Math.random() * 10);
         }

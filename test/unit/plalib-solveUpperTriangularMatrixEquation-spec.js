@@ -20,7 +20,7 @@ describe('Plalib.solveUpperTriangularMatrixEquation', function() {
 
     beforeEach(function() {
       n = 9;
-      u = new SharedFloat64Array(n * n);
+      u = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n * n));
       u.set([
         8, 7, 6, 8, 9, 9, 6, 2, 3,
         0, 9, 7, 2, 1, 5, 1, 1, 2,
@@ -33,7 +33,7 @@ describe('Plalib.solveUpperTriangularMatrixEquation', function() {
         0, 0, 0, 0, 0, 0, 0, 0, 2
       ]);
 
-      b = new SharedFloat64Array(n);
+      b = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n));
       b.set([
         14,
         9,

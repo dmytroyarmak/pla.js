@@ -16,7 +16,7 @@ describe('plalib.gaussianEliminationPar', function() {
 
     beforeEach(function() {
       n = 9;
-      a = new SharedFloat64Array(n * n);
+      a = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n * n));
       a.set([
         8, 7, 6, 8, 9, 9, 6, 2, 3,
         7, 9, 7, 2, 1, 5, 1, 1, 2,
@@ -29,7 +29,7 @@ describe('plalib.gaussianEliminationPar', function() {
         2, 7, 8, 2, 8, 1, 8, 7, 5
       ]);
 
-      b = new SharedFloat64Array(n);
+      b = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n));
       b.set([
         9,
         9,
@@ -55,7 +55,7 @@ describe('plalib.gaussianEliminationPar', function() {
       });
 
       it('should transform a to triangular form', function() {
-        var expectedA = new SharedFloat64Array(81);
+        var expectedA = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * 81));
         expectedA.set([
           8, 7, 6, 8, 9, 9, 6, 2, 3,
           0, 2.875, 1.75, -5, -6.875, -2.875, -4.25, -0.75, -0.625,
@@ -70,7 +70,7 @@ describe('plalib.gaussianEliminationPar', function() {
 
         expect(a).toEqual(expectedA);
 
-        var expectedB = new SharedFloat64Array(9);
+        var expectedB = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * 9));
         expectedB.set([
           9,
           1.125,

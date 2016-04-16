@@ -22,7 +22,7 @@ export class Plalib {
   }
 
   solveUpperTriangularMatrixEquation(n, u, b) {
-    var x = new SharedFloat64Array(n);
+    var x = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n));
 
     for (let k = n - 1; k >= 0; k -= 1) {
       x[k] = b[k];
