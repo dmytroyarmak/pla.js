@@ -1,4 +1,4 @@
-import {Plalib} from '../../src/plalib';
+import Plalib from '../../src/plalib';
 
 describe('plalib.gaussianEliminationPar', function() {
   var plalib;

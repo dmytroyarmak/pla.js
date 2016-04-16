@@ -1,4 +1,4 @@
-import {Plalib} from '../../src/plalib';
+import Plalib from '../../src/plalib';
 
 describe('Plalib', function() {
   it('should be defined', function() {
