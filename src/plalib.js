@@ -13,12 +13,14 @@ export default class Plalib {
     });
   }
 
-  gaussianEliminationPar(n, a, b) {
-    return this._invokeOnWebWorkers('gaussianElimination', n, a, b);
+  gaussianEliminationPar(n, a, b, useWorkers) {
+    useWorkers = useWorkers || this.workersAmount;
+    return this._invokeOnWebWorkers('gaussianElimination', n, a, b, useWorkers);
   }
 
-  gaussJordanEliminationPar(n, a, b) {
-    return this._invokeOnWebWorkers('gaussJordanElimination', n, a, b);
+  gaussJordanEliminationPar(n, a, b, useWorkers) {
+    useWorkers = useWorkers || this.workersAmount;
+    return this._invokeOnWebWorkers('gaussJordanElimination', n, a, b, useWorkers);
   }
 
   solveUpperTriangularMatrixEquation(n, u, b) {
@@ -37,7 +39,11 @@ export default class Plalib {
     return Promise.resolve(x);
   }
 
-  _invokeOnWebWorkers(methodName, n, a, b) {
+  _invokeOnWebWorkers(methodName, n, a, b, useWorkers) {
+    if (useWorkers > this.workersAmount) {
+      throw new Error('There is no enouth workers!');
+    }
+
     var barrier = initBarrier(this.workersAmount);
 
     return Promise.all(this._workers.map((worker, i) => {
