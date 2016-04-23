@@ -11,9 +11,9 @@ describe('choleskyDecomposition', function() {
     beforeEach(function() {
       n = 3;
       a = [
-        5, 2, 3,
-        2, 6, 1,
-        3, 1, 7
+        25,  15,  -5,
+        15,  18,   0,
+        -5,   0,  11
       ];
 
       choleskyDecomposition(n, a);
@@ -21,9 +21,9 @@ describe('choleskyDecomposition', function() {
 
     it('should transform a to triangular form', function() {
       expect(a).toEqual([
-        2.23606797749979, 0, 0,
-        0.8944271909999159, 2.280350850198276, 0,
-        1.3416407864998738, -0.08770580193070289, 2.27866357593825
+        5, 0, 0,
+        3, 3, 0,
+        -1, 1, 3
       ]);
     });
   });
