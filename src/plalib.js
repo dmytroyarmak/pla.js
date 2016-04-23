@@ -23,48 +23,16 @@ export default class Plalib {
     return this._invokeOnWebWorkers('gaussJordanElimination', n, a, b, useWorkers);
   }
 
-  solveUpperTriangularMatrixEquation(n, u, b) {
-    var x = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n));
-
-    for (let k = n - 1; k >= 0; k -= 1) {
-      x[k] = b[k];
-
-      for (let i = k + 1; i < n; i += 1) {
-        x[k] -= x[i] * u[k * n + i];
-      }
-
-      x[k] = x[k]/u[k * n + k];
-    }
-
-    return Promise.resolve(x);
-  }
-
-  solveLowerTriangularMatrixEquation(n, l, b) {
-    var x = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n));
-
-    for (let k = 0; k < n; k += 1) {
-      x[k] = b[k];
-
-      for (let i = 0; i < k; i += 1) {
-        x[k] -= x[i] * l[k * n + i];
-      }
-
-      x[k] = x[k]/l[k * n + k];
-    }
-
-    return Promise.resolve(x);
-  }
-
-  transposeMatrix(n, a) {
-    var at = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n * n));
-
-    for (let i = 0; i < n; i += 1) {
-      for (let j = 0; j < n; j += 1) {
-        at[j + i * n] = a[i + j * n];
-      }
-    }
-
-    return Promise.resolve(at);
+  solveLineraEquationByCholetskyPar(n, a, b, useWorkers) {
+    useWorkers = useWorkers || this.workersAmount;
+    // return this._invokeOnWebWorkers('choleskyDecomposition', n, a, useWorkers).then(() => {
+    //   console.log(a);
+    //   let l = a;
+    //   return this.solveLowerTriangularMatrixEquation(n, l, b);
+    // }).then((y) => {
+    //   let lt = this.transposeMatrix(n, a);
+    //   return this.solveUpperTriangularMatrixEquation(n, lt, y);
+    // });
   }
 
   _invokeOnWebWorkers(methodName, n, a, b, useWorkers) {

@@ -123,3 +123,35 @@ export function choleskyDecomposition (n, a) {
     }
   }
 }
+
+export function solveUpperTriangularMatrixEquation(n, u, b) {
+  for (let k = n - 1; k >= 0; k -= 1) {
+    for (let i = k + 1; i < n; i += 1) {
+      b[k] -= b[i] * u[k * n + i];
+    }
+
+    b[k] = b[k]/u[k * n + k];
+  }
+}
+
+export function solveLowerTriangularMatrixEquation(n, l, b) {
+  for (let k = 0; k < n; k += 1) {
+    for (let i = 0; i < k; i += 1) {
+      b[k] -= b[i] * l[k * n + i];
+    }
+
+    b[k] = b[k]/l[k * n + k];
+  }
+}
+
+export function transposeMatrix(n, a) {
+  for (let i = 0; i < n; i += 1) {
+    for (let j = i + 1; j < n; j += 1) {
+      let ji = j + i * n;
+      let ij = i + j * n;
+      let tmp = a[ji];
+      a[ji] = a[ij];
+      a[ij] = tmp;
+    }
+  }
+}
