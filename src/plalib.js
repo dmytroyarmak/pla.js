@@ -39,6 +39,22 @@ export default class Plalib {
     return Promise.resolve(x);
   }
 
+  solveLowerTriangularMatrixEquation(n, l, b) {
+    var x = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n));
+
+    for (let k = 0; k < n; k += 1) {
+      x[k] = b[k];
+
+      for (let i = 0; i < k; i += 1) {
+        x[k] -= x[i] * l[k * n + i];
+      }
+
+      x[k] = x[k]/l[k * n + k];
+    }
+
+    return Promise.resolve(x);
+  }
+
   transposeMatrix(n, a) {
     var at = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n * n));
 
