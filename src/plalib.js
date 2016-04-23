@@ -39,6 +39,18 @@ export default class Plalib {
     return Promise.resolve(x);
   }
 
+  transposeMatrix(n, a) {
+    var at = new Float64Array(new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * n * n));
+
+    for (let i = 0; i < n; i += 1) {
+      for (let j = 0; j < n; j += 1) {
+        at[j + i * n] = a[i + j * n];
+      }
+    }
+
+    return Promise.resolve(at);
+  }
+
   _invokeOnWebWorkers(methodName, n, a, b, useWorkers) {
     if (useWorkers > this.workersAmount) {
       throw new Error('There is no enouth workers!');
