@@ -102,6 +102,16 @@ export function gaussianEliminationWithMainElementByRow (n, a, b, numberOfWorker
   }
 }
 
+export function solveLineraEquationByCholetsky(n, a, b, numberOfWorker, workersAmount, barrie) {
+  if (!numberOfWorker) {
+    choleskyDecomposition(n, a);
+    solveLowerTriangularMatrixEquation(n, a, b);
+    transposeMatrix(n, a);
+    solveUpperTriangularMatrixEquation(n, a, b);
+    fillIdentityMatrix(n, a);
+  }
+}
+
 // Cholesky–Crout algorithm
 export function choleskyDecomposition (n, a) {
   for (let i = 0; i < n; i += 1) {
@@ -152,6 +162,14 @@ export function transposeMatrix(n, a) {
       let tmp = a[ji];
       a[ji] = a[ij];
       a[ij] = tmp;
+    }
+  }
+}
+
+export function fillIdentityMatrix(n, a) {
+  for (let i = 0; i < n; i += 1) {
+    for (let j = 0; j < n; j += 1) {
+      a[i + j * n] = Number(i === j);
     }
   }
 }

@@ -25,14 +25,7 @@ export default class Plalib {
 
   solveLineraEquationByCholetskyPar(n, a, b, useWorkers) {
     useWorkers = useWorkers || this.workersAmount;
-    // return this._invokeOnWebWorkers('choleskyDecomposition', n, a, useWorkers).then(() => {
-    //   console.log(a);
-    //   let l = a;
-    //   return this.solveLowerTriangularMatrixEquation(n, l, b);
-    // }).then((y) => {
-    //   let lt = this.transposeMatrix(n, a);
-    //   return this.solveUpperTriangularMatrixEquation(n, lt, y);
-    // });
+    return this._invokeOnWebWorkers('solveLineraEquationByCholetsky', n, a, b, useWorkers);
   }
 
   _invokeOnWebWorkers(methodName, n, a, b, useWorkers) {
