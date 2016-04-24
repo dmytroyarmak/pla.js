@@ -4,7 +4,7 @@ describe('Plalib.solveLineraEquationByCholetskyPar', function() {
   var plalib;
 
   beforeEach(function() {
-    plalib = new Plalib();
+    plalib = new Plalib({workersAmount: 3});
   });
 
   afterEach(function() {
@@ -72,15 +72,15 @@ describe('Plalib.solveLineraEquationByCholetskyPar', function() {
         ];
 
         for (i = 0; i < expectedA.length; i += 1) {
-          expect(a[i]).toBeCloseTo(expectedA[i], 15);
+          expect(a[i]).toBeCloseTo(expectedA[i], 10);
         }
 
         var expectedB = [
           4.000000000000002,
           -4.4000000000000075,
           2.742857142857157,
-          2.4761904761904603,
-          -2.1212121212120976,
+          2.4761904761904585,
+          -2.121212121212096,
           22.699300699300665,
           -37.97948717948714,
           23.278431372548987,
@@ -88,7 +88,7 @@ describe('Plalib.solveLineraEquationByCholetskyPar', function() {
         ];
 
         for (i = 0; i < expectedB.length; i += 1) {
-          expect(b[i]).toBeCloseTo(expectedB[i], 15);
+          expect(b[i]).toBeCloseTo(expectedB[i], 10);
         }
       });
     });

@@ -1,4 +1,4 @@
-import {initBarrier} from './plalib-barrier-master';
+import {initSync} from './plalib-sync-master';
 
 export default class Plalib {
   constructor({workersAmount = 4, workerUrl = '/src/plalib-worker.js'} = {}) {
@@ -33,14 +33,14 @@ export default class Plalib {
       throw new Error('There is no enouth workers!');
     }
 
-    var barrier = initBarrier(this.workersAmount);
+    var sync = initSync(this.workersAmount);
 
     return Promise.all(this._workers.map((worker, i) => {
         return new Promise((resolve, reject) => {
           var taskId = Date.now();
           worker.postMessage(
-            [methodName, taskId, n, a, b, i, this.workersAmount, barrier],
-            [barrier.buffer, a.buffer, b.buffer]
+            [methodName, taskId, n, a, b, i, this.workersAmount, sync],
+            [sync.buffer, a.buffer, b.buffer]
           );
 
           worker.onmessage = (e) => {

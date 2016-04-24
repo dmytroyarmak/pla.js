@@ -1,11 +1,11 @@
-import {enterBarrier} from './plalib-barrier-worker';
+import {enterBarrier, enterMutex, leaveMutex} from './plalib-sync-worker';
 
 // For non-parallel version only n, a, b are required parameters
-export function gaussianElimination (n, a, b, numberOfWorker, workersAmount, barrier) {
+export function gaussianElimination (n, a, b, numberOfWorker, workersAmount, sync) {
   for (let k = 0; k < n; k += 1) {
     for (let i = k + 1; i < n; i += 1) {
       // Worker with number N should calculate each N-th row (ignored for not parallel case)
-      if (!barrier || i % workersAmount === numberOfWorker) {
+      if (!sync || i % workersAmount === numberOfWorker) {
         let coef = a[i * n + k] / a[k * n + k];
 
         a[i * n + k] = 0;
@@ -19,18 +19,18 @@ export function gaussianElimination (n, a, b, numberOfWorker, workersAmount, bar
     }
 
     // Used for parallel implementation to sync web workers
-    enterBarrier(barrier);
+    enterBarrier(sync);
   }
 }
 
 // For non-parallel version only n, a, b are required parameters
-export function gaussJordanElimination (n, a, b, numberOfWorker, workersAmount, barrier) {
-  gaussianElimination(n, a, b, numberOfWorker, barrier);
+export function gaussJordanElimination (n, a, b, numberOfWorker, workersAmount, sync) {
+  gaussianElimination(n, a, b, numberOfWorker, sync);
 
   for (let k = n - 1; k >= 0; k -= 1) {
     for (let i = 0; i < k; i += 1) {
       // Worker with number N should calculate each N-th row (ignored for not parallel case)
-      if (!barrier || i % workersAmount === numberOfWorker) {
+      if (!sync || i % workersAmount === numberOfWorker) {
         let coef = a[i * n + k] / a[k * n + k];
         a[i * n + k] = 0;
         b[i] = b[i] - b[k] * coef;
@@ -38,19 +38,19 @@ export function gaussJordanElimination (n, a, b, numberOfWorker, workersAmount, 
     }
 
     // Used for parallel implementation to sync web workers
-    enterBarrier(barrier);
+    enterBarrier(sync);
 
     if (!numberOfWorker) {
       b[k] = b[k] / a[k * n + k];
       a[k * n + k] = 1;
     }
 
-    enterBarrier(barrier);
+    enterBarrier(sync);
   }
 }
 
 // For non-parallel version only n, a, b are required parameters
-export function gaussianEliminationWithMainElementByRow (n, a, b, numberOfWorker, workersAmount, barrier) {
+export function gaussianEliminationWithMainElementByRow (n, a, b, numberOfWorker, workersAmount, sync) {
   for (let k = 0; k < n; k += 1) {
 
     // Find main row
@@ -80,11 +80,11 @@ export function gaussianEliminationWithMainElementByRow (n, a, b, numberOfWorker
       }
     }
 
-    enterBarrier(barrier);
+    enterBarrier(sync);
 
     for (let i = k + 1; i < n; i += 1) {
       // Worker with number N should calculate each N-th row (ignored for not parallel case)
-      if (!barrier || i % workersAmount === numberOfWorker) {
+      if (!sync || i % workersAmount === numberOfWorker) {
         let coef = a[i * n + k] / a[k * n + k];
 
         a[i * n + k] = 0;
@@ -98,78 +98,119 @@ export function gaussianEliminationWithMainElementByRow (n, a, b, numberOfWorker
     }
 
     // Used for parallel implementation to sync web workers
-    enterBarrier(barrier);
+    enterBarrier(sync);
   }
 }
 
-export function solveLineraEquationByCholetsky(n, a, b, numberOfWorker, workersAmount, barrie) {
-  if (!numberOfWorker) {
-    choleskyDecomposition(n, a);
-    solveLowerTriangularMatrixEquation(n, a, b);
-    transposeMatrix(n, a);
-    solveUpperTriangularMatrixEquation(n, a, b);
-    fillIdentityMatrix(n, a);
-  }
+export function solveLineraEquationByCholetsky(n, a, b, numberOfWorker, workersAmount, sync) {
+  choleskyDecomposition(n, a, numberOfWorker, workersAmount, sync);
+  solveLowerTriangularMatrixEquation(n, a, b, numberOfWorker, workersAmount, sync);
+  transposeMatrix(n, a, numberOfWorker, workersAmount, sync);
+  solveUpperTriangularMatrixEquation(n, a, b, numberOfWorker, workersAmount, sync);
+  fillIdentityMatrix(n, a, numberOfWorker, workersAmount, sync);
 }
 
 // Cholesky–Crout algorithm
-export function choleskyDecomposition (n, a) {
+export function choleskyDecomposition (n, a, numberOfWorker, workersAmount, sync) {
   for (let i = 0; i < n; i += 1) {
+    let sumOfSquares = 0;
+
     for (let k = 0; k < i; k += 1) {
-      a[i * n + i] = a[i * n + i] - Math.pow(a[i * n + k], 2);
-    }
-
-    a[i * n + i] = Math.sqrt(a[i * n + i]);
-
-    for (let j = 0; j < i; j += 1) {
-      a[j * n + i] = 0;
-    }
-
-    for (let j = i + 1; j < n; j += 1) {
-      for (let k = 0; k < i; k += 1) {
-        a[j * n + i] = a[j * n + i] - a[i * n + k] * a[j * n + k];
+      if (!sync || k % workersAmount === numberOfWorker) {
+        sumOfSquares += Math.pow(a[i * n + k], 2);
       }
-      a[j * n + i] = a[j * n + i] / a[i * n + i];
-    }
-  }
-}
-
-export function solveUpperTriangularMatrixEquation(n, u, b) {
-  for (let k = n - 1; k >= 0; k -= 1) {
-    for (let i = k + 1; i < n; i += 1) {
-      b[k] -= b[i] * u[k * n + i];
     }
 
-    b[k] = b[k]/u[k * n + k];
-  }
-}
+    enterMutex(sync);
+    a[i * n + i] -= sumOfSquares;
+    leaveMutex(sync);
 
-export function solveLowerTriangularMatrixEquation(n, l, b) {
-  for (let k = 0; k < n; k += 1) {
-    for (let i = 0; i < k; i += 1) {
-      b[k] -= b[i] * l[k * n + i];
+    enterBarrier(sync);
+
+    if (!numberOfWorker) {
+
+      a[i * n + i] = Math.sqrt(a[i * n + i]);
+
+      for (let j = 0; j < i; j += 1) {
+        a[j * n + i] = 0;
+      }
     }
 
-    b[k] = b[k]/l[k * n + k];
-  }
-}
+    enterBarrier(sync);
 
-export function transposeMatrix(n, a) {
-  for (let i = 0; i < n; i += 1) {
     for (let j = i + 1; j < n; j += 1) {
-      let ji = j + i * n;
-      let ij = i + j * n;
-      let tmp = a[ji];
-      a[ji] = a[ij];
-      a[ij] = tmp;
+      if (!sync || j % workersAmount === numberOfWorker) {
+        for (let k = 0; k < i; k += 1) {
+          a[j * n + i] = a[j * n + i] - a[i * n + k] * a[j * n + k];
+        }
+        a[j * n + i] = a[j * n + i] / a[i * n + i];
+      }
     }
+
+    enterBarrier(sync);
   }
 }
 
-export function fillIdentityMatrix(n, a) {
-  for (let i = 0; i < n; i += 1) {
-    for (let j = 0; j < n; j += 1) {
-      a[i + j * n] = Number(i === j);
+export function solveUpperTriangularMatrixEquation(n, u, b, numberOfWorker, workersAmount, sync) {
+  for (let k = n - 1; k >= 0; k -= 1) {
+    if (!numberOfWorker) {
+      b[k] = b[k]/u[k * n + k];
+    }
+
+    enterBarrier(sync);
+
+    for (let i = 0; i < k; i += 1) {
+      if (!sync || i % workersAmount === numberOfWorker) {
+        b[i] -= b[k] * u[i * n + k];
+      }
+    }
+
+    enterBarrier(sync);
+  }
+}
+
+export function solveLowerTriangularMatrixEquation(n, l, b, numberOfWorker, workersAmount, sync) {
+  for (let k = 0; k < n; k += 1) {
+    if (!numberOfWorker) {
+      b[k] = b[k]/l[k * n + k];
+    }
+
+    enterBarrier(sync);
+
+    for (let i = k + 1; i < n; i += 1) {
+      if (!sync || i % workersAmount === numberOfWorker) {
+        b[i] -= b[k] * l[i * n + k];
+      }
+    }
+
+    enterBarrier(sync);
+  }
+}
+
+export function transposeMatrix(n, a, numberOfWorker, workersAmount, sync) {
+  // Worker 0 is doing everithing
+  if (!numberOfWorker) {
+    for (let i = 0; i < n; i += 1) {
+      for (let j = i + 1; j < n; j += 1) {
+        let ji = j + i * n;
+        let ij = i + j * n;
+        let tmp = a[ji];
+        a[ji] = a[ij];
+        a[ij] = tmp;
+      }
     }
   }
+  enterBarrier(sync);
+}
+
+export function fillIdentityMatrix(n, a, numberOfWorker, workersAmount, sync) {
+  // Worker 0 is doing everithing
+  if (!numberOfWorker) {
+    for (let i = 0; i < n; i += 1) {
+      for (let j = 0; j < n; j += 1) {
+        a[i + j * n] = Number(i === j);
+      }
+    }
+  }
+  enterBarrier(sync);
 }
