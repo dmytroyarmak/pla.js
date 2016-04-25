@@ -1,6 +1,6 @@
 {
   "name": "plalib",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Library with implementations of linear algebra parallel algorithms using JS and Web technologies",
   "main": "src/plalib.js",
   "scripts": {
