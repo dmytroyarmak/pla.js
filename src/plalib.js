@@ -33,13 +33,13 @@ export default class Plalib {
       throw new Error('There is no enouth workers!');
     }
 
-    var sync = initSync(this.workersAmount);
+    var sync = initSync(useWorkers);
 
-    return Promise.all(this._workers.map((worker, i) => {
+    return Promise.all(this._workers.slice(0, useWorkers).map((worker, i) => {
         return new Promise((resolve, reject) => {
           var taskId = Date.now();
           worker.postMessage(
-            [methodName, taskId, n, a, b, i, this.workersAmount, sync],
+            [methodName, taskId, n, a, b, i, useWorkers, sync],
             [sync.buffer, a.buffer, b.buffer]
           );
 
