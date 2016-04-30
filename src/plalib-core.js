@@ -25,7 +25,7 @@ export function gaussianElimination (n, a, b, numberOfWorker, workersAmount, syn
 
 // For non-parallel version only n, a, b are required parameters
 export function gaussJordanElimination (n, a, b, numberOfWorker, workersAmount, sync) {
-  gaussianElimination(n, a, b, numberOfWorker, sync);
+  gaussianElimination(n, a, b, numberOfWorker, workersAmount, sync);
 
   for (let k = n - 1; k >= 0; k -= 1) {
     for (let i = 0; i < k; i += 1) {
