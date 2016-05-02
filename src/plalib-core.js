@@ -214,3 +214,56 @@ export function fillIdentityMatrix(n, a, numberOfWorker, workersAmount, sync) {
   }
   enterBarrier(sync);
 }
+
+export function reductionToTridiagonalMatrix(n, a) {
+  for (let i = n - 1; i >= 2 ; i--) {
+
+    let o2 = 0;
+    for (let j = 0; j <= i - 1; j += 1) {
+      o2 += Math.pow(a[i * n + j], 2);
+    }
+
+    let ek = -Math.sign(a[i * n + (i - 1)]) * o2;
+
+    let ui = [];
+    for (let j = 0; j <= i; j += 1) {
+      if (j < i) {
+        ui[j] = a[i * n + j];
+
+        if (j === i - 1) {
+          ui[j] -= ek;
+        }
+      } else {
+        ui[j] = 0;
+      }
+
+    }
+
+    let si = 1 / (ek * a[i * n + (i - 1)] - o2);
+
+    let wi = [];
+    for (let j = 0; j <= i; j += 1) {
+      wi[j] = 0;
+      for (let l = 0; l <= i; l += 1) {
+        wi[j] += a[j * n + l] * ui[l];
+      }
+      wi[j]  = wi[j] * si;
+    }
+
+    let ci = [];
+    for (let j = 0; j <= i; j += 1) {
+      ci[j] = 0.5 * si * wi[j] * ui[j];
+    }
+
+    let vi = [];
+    for (let j = 0; j <= i; j += 1) {
+        vi[j] = wi[j] + ci[j] * ui[j];
+    }
+
+    for (let j = 0; j <= i; j += 1) {
+      for (let k = 0; k <= i; k += 1) {
+        a[j * n + k] += ui[j] * vi[k] + ui[k] * vi[j];
+      }
+    }
+  }
+}
