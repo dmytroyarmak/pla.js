@@ -3,6 +3,19 @@ import {BARRIER_COUNTE_INDEX, BARRIER_SEQ_INDEX, BARRIER_NUM_AGENTS_INDEX, MUTEX
 export function enterBarrier (sync) {
   if (!sync) { return; }
 
+  var seq = Atomics.load(sync, BARRIER_SEQ_INDEX);
+
+  if (Atomics.sub(sync, BARRIER_COUNTE_INDEX, 1) === 1) {
+      sync[BARRIER_COUNTE_INDEX] = sync[BARRIER_NUM_AGENTS_INDEX];
+      Atomics.add(sync, BARRIER_SEQ_INDEX, 1);
+  } else {
+      while (Atomics.load(sync, BARRIER_SEQ_INDEX) === seq);
+  }
+}
+
+export function enterBarrierWithWait (sync) {
+  if (!sync) { return; }
+
   var numAgents;
   var seq = Atomics.load(sync, BARRIER_SEQ_INDEX);
 

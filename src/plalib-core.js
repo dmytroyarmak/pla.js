@@ -215,7 +215,12 @@ export function fillIdentityMatrix(n, a, numberOfWorker, workersAmount, sync) {
   enterBarrier(sync);
 }
 
-export function reductionToTridiagonalMatrix(n, a) {
+export function solveFullEigenvalueDenseSym(n, a, b, numberOfWorker, workersAmount, sync) {
+  reductionToTridiagonalMatrix(n, a, b, numberOfWorker, workersAmount, sync);
+}
+
+export function reductionToTridiagonalMatrix(n, a, b, numberOfWorker, workersAmount, sync) {
+  // Worker 0 is doing everithing
   for (let i = n - 1; i >= 2 ; i--) {
 
     let o2 = 0;
@@ -260,10 +265,14 @@ export function reductionToTridiagonalMatrix(n, a) {
         vi[j] = wi[j] + ci[j] * ui[j];
     }
 
+    enterBarrier(sync);
     for (let j = 0; j <= i; j += 1) {
-      for (let k = 0; k <= i; k += 1) {
-        a[j * n + k] += ui[j] * vi[k] + ui[k] * vi[j];
+      if (!sync || j % workersAmount === numberOfWorker) {
+        for (let k = 0; k <= i; k += 1) {
+          a[j * n + k] += ui[j] * vi[k] + ui[k] * vi[j];
+        }
       }
     }
+    enterBarrier(sync);
   }
 }

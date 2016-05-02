@@ -28,6 +28,11 @@ export default class Plalib {
     return this._invokeOnWebWorkers('solveLineraEquationByCholetsky', n, a, b, useWorkers);
   }
 
+  solveFullEigenvalueDenseSymPar(n, a, b, useWorkers) {
+    useWorkers = useWorkers || this.workersAmount;
+    return this._invokeOnWebWorkers('solveFullEigenvalueDenseSym', n, a, b, useWorkers);
+  }
+
   _invokeOnWebWorkers(methodName, n, a, b, useWorkers) {
     if (useWorkers > this.workersAmount) {
       throw new Error('There is no enouth workers!');
