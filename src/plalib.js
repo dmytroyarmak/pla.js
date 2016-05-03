@@ -28,9 +28,9 @@ export default class Plalib {
     return this._invokeOnWebWorkers('solveLineraEquationByCholetsky', useWorkers, n, a, b);
   }
 
-  solveFullEigenvalueDenseSymPar(n, a, b, useWorkers) {
+  solveFullEigenvalueDenseSymPar(n, a, useWorkers) {
     useWorkers = useWorkers || this.workersAmount;
-    return this._invokeOnWebWorkers('solveFullEigenvalueDenseSym', useWorkers, n, a, b);
+    return this._invokeOnWebWorkers('solveFullEigenvalueDenseSym', useWorkers, n, a);
   }
 
   powerMethodPar(n, a, x, xTmp, useWorkers) {

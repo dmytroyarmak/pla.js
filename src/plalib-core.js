@@ -215,11 +215,11 @@ export function fillIdentityMatrix(n, a, numberOfWorker, workersAmount, sync) {
   enterBarrier(sync);
 }
 
-export function solveFullEigenvalueDenseSym(n, a, b, numberOfWorker, workersAmount, sync) {
-  reductionToTridiagonalMatrix(n, a, b, numberOfWorker, workersAmount, sync);
+export function solveFullEigenvalueDenseSym(n, a, numberOfWorker, workersAmount, sync) {
+  reductionToTridiagonalMatrix(n, a, numberOfWorker, workersAmount, sync);
 }
 
-export function reductionToTridiagonalMatrix(n, a, b, numberOfWorker, workersAmount, sync) {
+export function reductionToTridiagonalMatrix(n, a, numberOfWorker, workersAmount, sync) {
   // Worker 0 is doing everithing
   for (let i = n - 1; i >= 2 ; i--) {
 
