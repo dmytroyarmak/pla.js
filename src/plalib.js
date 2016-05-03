@@ -15,37 +15,43 @@ export default class Plalib {
 
   gaussianEliminationPar(n, a, b, useWorkers) {
     useWorkers = useWorkers || this.workersAmount;
-    return this._invokeOnWebWorkers('gaussianElimination', n, a, b, useWorkers);
+    return this._invokeOnWebWorkers('gaussianElimination', useWorkers, n, a, b);
   }
 
   gaussJordanEliminationPar(n, a, b, useWorkers) {
     useWorkers = useWorkers || this.workersAmount;
-    return this._invokeOnWebWorkers('gaussJordanElimination', n, a, b, useWorkers);
+    return this._invokeOnWebWorkers('gaussJordanElimination', useWorkers, n, a, b);
   }
 
   solveLineraEquationByCholetskyPar(n, a, b, useWorkers) {
     useWorkers = useWorkers || this.workersAmount;
-    return this._invokeOnWebWorkers('solveLineraEquationByCholetsky', n, a, b, useWorkers);
+    return this._invokeOnWebWorkers('solveLineraEquationByCholetsky', useWorkers, n, a, b);
   }
 
   solveFullEigenvalueDenseSymPar(n, a, b, useWorkers) {
     useWorkers = useWorkers || this.workersAmount;
-    return this._invokeOnWebWorkers('solveFullEigenvalueDenseSym', n, a, b, useWorkers);
+    return this._invokeOnWebWorkers('solveFullEigenvalueDenseSym', useWorkers, n, a, b);
   }
 
-  _invokeOnWebWorkers(methodName, n, a, b, useWorkers) {
+  powerMethodPar(n, a, x, xTmp, useWorkers) {
+    useWorkers = useWorkers || this.workersAmount;
+    return this._invokeOnWebWorkers('powerMethod', useWorkers, n, a, x, xTmp);
+  }
+
+  _invokeOnWebWorkers(methodName, useWorkers, ...args) {
     if (useWorkers > this.workersAmount) {
       throw new Error('There is no enouth workers!');
     }
 
-    var sync = initSync(useWorkers);
+    let sync = initSync(useWorkers);
 
     return Promise.all(this._workers.slice(0, useWorkers).map((worker, i) => {
         return new Promise((resolve, reject) => {
-          var taskId = Date.now();
+          let taskId = Date.now();
+          let argBuffers = args.filter(x => x.buffer && x.buffer instanceof SharedArrayBuffer).map(x => x.buffer);
           worker.postMessage(
-            [methodName, taskId, n, a, b, i, useWorkers, sync],
-            [sync.buffer, a.buffer, b.buffer]
+            [methodName, taskId, ...args, i, useWorkers, sync],
+            [sync.buffer, ...argBuffers]
           );
 
           worker.onmessage = (e) => {
