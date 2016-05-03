@@ -281,36 +281,43 @@ const POWER_METHOD_PRECISION = 0.0000001;
 const POWER_METHOD_MAX_ITERATIONS = 100;
 
 export function powerMethod(n, a, x, xTmp, numberOfWorker, workersAmount, sync) {
-  // Worker 0 is doing everithing
-  if (!numberOfWorker) {
-    let l;
-    let l0;
-    let iteration = 0;
+  let l;
+  let l0;
+  let iteration = 0;
 
-    while (!l || !l0 || (Math.abs(l0 - l) > POWER_METHOD_PRECISION && iteration < POWER_METHOD_MAX_ITERATIONS)) {
-      for (let i = 0; i < n; i += 1) {
+  while (!l || !l0 || (Math.abs(l0 - l) > POWER_METHOD_PRECISION && iteration < POWER_METHOD_MAX_ITERATIONS)) {
+    for (let i = 0; i < n; i += 1) {
+      if (!sync || i % workersAmount === numberOfWorker) {
         let xi = 0;
         for (let j = 0; j < n; j += 1) {
           xi += a[i * n + j] * x[j];
         }
         xTmp[i] = xi;
       }
-
-      l0 = l;
-      l = 0;
-      for (let i = 0; i < n; i += 1) {
-        l += Math.pow(xTmp[i], 2);
-      }
-      l = Math.sqrt(l);
-
-      for (let i = 0; i < n; i += 1) {
-        x[i] = xTmp[i]/l;
-      }
-
-      iteration += 1;
     }
 
+    enterBarrier(sync);
+
+
+    l0 = l;
+    l = 0;
+    for (let i = 0; i < n; i += 1) {
+      l += Math.pow(xTmp[i], 2);
+    }
+    l = Math.sqrt(l);
+
+    for (let i = 0; i < n; i += 1) {
+      if (!sync || i % workersAmount === numberOfWorker) {
+        x[i] = xTmp[i]/l;
+      }
+    }
+
+    enterBarrier(sync);
+
+    iteration += 1;
+  }
+
+  if (!numberOfWorker) {
     xTmp[0] = l;
   }
-  enterBarrier(sync);
 }
